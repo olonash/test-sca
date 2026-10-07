@@ -1,0 +1,79 @@
+name: scal-e
+
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: scal-e-app
+    working_dir: /var/www/html
+    ports:
+      - "8080:80"
+    volumes:
+      - ..:/var/www/html
+    env_file:
+      - ../.env
+    depends_on:
+      db:
+        condition: service_healthy
+
+  composer:
+    image: composer:2
+    profiles: ["tools"]
+    working_dir: /app
+    user: "${HOST_UID:-1000}:${HOST_GID:-1000}"
+    volumes:
+      - ..:/app
+    entrypoint: ["composer"]
+
+  cron:
+    build:
+      context: ..
+      dockerfile: docker/cron/Dockerfile
+    container_name: scal-e-db-export
+    restart: unless-stopped
+    environment:
+      TZ: ${TZ:-Africa/Nairobi}
+    volumes:
+      - ..:/app
+    depends_on:
+      db:
+        condition: service_healthy
+
+  phpmyadmin:
+    image: phpmyadmin:5-apache
+    container_name: scal-e-phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+    ports:
+      - "127.0.0.1:8081:80"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: mysql:8.0
+    container_name: scal-e-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-scal_e_cdp}
+      MYSQL_USER: ${DB_USERNAME:-scal_e}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-scal_e_password}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root_password}
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -p$${MYSQL_ROOT_PASSWORD} --silent"]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+      start_period: 15s
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ../sql/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ../sql/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
+
+volumes:
+  mysql_data:

@@ -1,0 +1,8 @@
+.aider*
+vendor/
+.env
+.phpunit.result.cache
+coverage/
+exports/
+.DS_Store
+

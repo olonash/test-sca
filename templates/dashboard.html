@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scal-e CDP</title>
+    <link rel="stylesheet" href="/assets/styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Scal-e CDP Dashboard</h1>
+
+      <section class="card" aria-labelledby="customersHeading">
+        <div class="customer-toolbar">
+          <h2 id="customersHeading">Clients</h2>
+          <label class="customer-page-size" for="customerPageSize">
+            Clients par page
+            <select id="customerPageSize">
+              <option value="5" selected>5</option>
+              <option value="10">10</option>
+              <option value="20">20</option>
+            </select>
+          </label>
+          <label class="customer-sort-control" for="customerSortBy">
+            Trier par
+            <select id="customerSortBy">
+              <option value="created_at" selected>Date de création</option>
+              <option value="updated_at">Dernière mise à jour</option>
+              <option value="name">Nom</option>
+              <option value="email">E-mail</option>
+            </select>
+          </label>
+          <label class="customer-sort-control" for="customerSortOrder">
+            Ordre
+            <select id="customerSortOrder">
+              <option value="desc" selected>Décroissant</option>
+              <option value="asc">Croissant</option>
+            </select>
+          </label>
+        </div>
+        <pre id="customerJson" class="customer-json" aria-live="polite">Chargement des clients…</pre>
+        <div class="customer-pagination">
+          <p id="customerPageInfo" aria-live="polite">Chargement des clients…</p>
+          <div class="customer-page-buttons">
+            <button id="previousCustomerPage" type="button" disabled>Précédent</button>
+            <button id="nextCustomerPage" type="button" disabled>Suivant</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Ingestion d'événement</h2>
+        <div class="grid">
+          <div>
+            <label>Email</label>
+            <input id="customerEmail" type="email" value="john@example.com" />
+          </div>
+          <div>
+            <label>Nom client</label>
+            <input id="customerName" type="text" value="John Doe" />
+          </div>
+          <div>
+            <label>Événement</label>
+            <input id="eventName" type="text" value="purchase" />
+          </div>
+          <div>
+            <label>Montant</label>
+            <input id="eventAmount" type="number" value="120" />
+          </div>
+          <div>
+            <label>Produit</label>
+            <input id="eventProduct" type="text" value="Shoes" />
+          </div>
+        </div>
+        <button id="ingestButton" type="button">Envoyer l'événement</button>
+        <pre id="eventResult">{}</pre>
+      </section>
+
+      <section class="card">
+        <h2>Segmentation</h2>
+        <div class="grid">
+          <div>
+            <label>Seuil</label>
+            <input id="segmentThreshold" type="number" value="100" />
+          </div>
+        </div>
+        <button id="segmentButton" type="button">Lancer la requête</button>
+        <pre id="segmentResult">{}</pre>
+      </section>
+    </div>
+
+    <script src="/assets/app.js"></script>
+  </body>
+</html>
